@@ -1,15 +1,7 @@
 <?php
-const ERROR_REQUIRED = 'Veuillez renseigner ce champ';
-const ERROR_TITLE_TOO_SHORT = 'Le titre est trop court';
-const ERROR_CONTENT_TOO_SHORT = 'L\'article est trop court';
-const ERROR_IMAGE_URL = 'L\'image doit être une url valide';
+declare(strict_types=1);
 $filename = __DIR__ . '/data/articles.json';
-$errors = [
-    'title' => '',
-    'image' => '',
-    'category' => '',
-    'content' => ''
-];
+
 $category = '';
 if (file_exists($filename)) {
     $articles = json_decode(file_get_contents($filename), true) ?? [];
@@ -27,43 +19,7 @@ if ($id) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $_POST = filter_input_array(INPUT_POST, [
-        'title' => FILTER_SANITIZE_STRING,
-        'image' => FILTER_SANITIZE_URL,
-        'category' => FILTER_SANITIZE_STRING,
-        'content' => [
-            'filter' => FILTER_SANITIZE_STRING,
-            'flags' => FILTER_FLAG_NO_ENCODE_QUOTES
-        ]
-    ]);
-    $title = $_POST['title'] ?? '';
-    $image = $_POST['image'] ?? '';
-    $category = $_POST['category'] ?? '';
-    $content = $_POST['content'] ?? '';
-
-
-    if (!$title) {
-        $errors['title'] = ERROR_REQUIRED;
-    } elseif (mb_strlen($title) < 5) {
-        $errors['title'] = ERROR_TITLE_TOO_SHORT;
-    }
-
-    if (!$image) {
-        $errors['image'] = ERROR_REQUIRED;
-    } elseif (!filter_var($image, FILTER_VALIDATE_URL)) {
-        $errors['image'] = ERROR_IMAGE_URL;
-    }
-
-    if (!$category) {
-        $errors['category'] = ERROR_REQUIRED;
-    }
-
-    if (!$content) {
-        $errors['content'] = ERROR_REQUIRED;
-    } elseif (mb_strlen($content) < 50) {
-        $errors['content'] = ERROR_CONTENT_TOO_SHORT;
-    }
+    require_once 'utils/sanitizeAndValidateForm.php';
 
     if (empty(array_filter($errors, fn ($e) => $e !== ''))) {
         if ($id) {
@@ -71,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $articles[$articleIndex]['image'] = $image;
             $articles[$articleIndex]['category'] = $category;
             $articles[$articleIndex]['content'] = $content;
+            
         } else {
             $articles = [...$articles, [
                 'title' => $title,
@@ -121,9 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-control">
                         <label for="category">Catégorie</label>
                         <select name="category" id="category">
-                            <option <?= !$category || $category === 'technologie' ? 'selected' : '' ?> value="technologie">Technologie</option>
-                            <option <?= $category === 'nature' ? 'selected' : '' ?> value="nature">Nature</option>
-                            <option <?= $category === 'politique' ? 'selected' : '' ?> value="politique">Politique</option>
+                             <?php require_once "utils/generateCategories.php"; ?>
                         </select>
                         <?php if ($errors['category']) : ?>
                             <p class="text-danger"><?= $errors['category'] ?></p>

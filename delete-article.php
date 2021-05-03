@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 $filename = __DIR__ . '/data/articles.json';
 $articles = [];
 $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);

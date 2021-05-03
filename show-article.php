@@ -1,5 +1,6 @@
 <?php
-$filename = __DIR__ . '/data/articles.json';
+declare(strict_types=1);
+require_once 'utils/findArticleById.php';
 $articles = [];
 $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $id = $_GET['id'] ?? '';
@@ -7,11 +8,7 @@ $id = $_GET['id'] ?? '';
 if (!$id) {
     header('Location: /');
 } else {
-    if (file_exists($filename)) {
-        $articles = json_decode(file_get_contents($filename), true) ?? [];
-        $articleIndex = array_search($id, array_column($articles, 'id'));
-        $article = $articles[$articleIndex];
-    }
+    $article = findArticleById($id);
 }
 
 ?>
