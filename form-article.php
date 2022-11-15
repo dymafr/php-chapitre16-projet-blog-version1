@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 $filename = __DIR__ . '/data/articles.json';
 
@@ -27,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $articles[$articleIndex]['image'] = $image;
             $articles[$articleIndex]['category'] = $category;
             $articles[$articleIndex]['content'] = $content;
-            
         } else {
             $articles = [...$articles, [
                 'title' => $title,
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-control">
                         <label for="category">Catégorie</label>
                         <select name="category" id="category">
-                             <?php require_once "utils/generateCategories.php"; ?>
+                            <?php require_once "utils/generateCategories.php"; ?>
                         </select>
                         <?php if ($errors['category']) : ?>
                             <p class="text-danger"><?= $errors['category'] ?></p>
